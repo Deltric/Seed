@@ -1,6 +1,7 @@
 plugins {
     id 'fabric-loom' version '0.12-SNAPSHOT'
     id 'maven-publish'
+    id "org.jetbrains.kotlin.jvm" version "1.6.21"
 }
 
 version = project.mod_version
@@ -26,6 +27,7 @@ dependencies {
     modImplementation("net.fabricmc:fabric-language-kotlin:${project.fabric_kotlin_version}")
 
     modImplementation include("net.kyori:adventure-platform-fabric:5.2.1")
+    modImplementation "net.kyori:adventure-text-minimessage:4.10.1"
 }
 
 processResources {
@@ -83,3 +85,4 @@ publishing {
         // retrieving dependencies.
     }
 }
+
