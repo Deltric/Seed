@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "id": "seed",
+  "version": "${version}",
+  "name": "Seed",
+  "description": " Open source server core mod for Fabric ",
+  "authors": [
+    "Deltric"
+  ],
+  "contact": {
+    "repo": "https://github.com/Deltric/Seed"
+  },
+  "license": "MIT",
+  "icon": "assets/seed/icon.png",
+  "environment": "server",
+  "entrypoints": {
+    "main": [
+      "dev.deltric.seed.Seed"
+    ]
+  },
+  "mixins": [
+    "seed.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.14.1",
+    "fabric": "*",
+    "minecraft": "1.18.2"
+  }
+}
