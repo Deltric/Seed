@@ -12,10 +12,13 @@
   },
   "license": "MIT",
   "icon": "assets/seed/icon.png",
-  "environment": "server",
+  "environment": "*",
   "entrypoints": {
     "main": [
-      "dev.deltric.seed.Seed"
+      {
+        "adapter": "kotlin",
+        "value": "dev.deltric.seed.Seed"
+      }
     ]
   },
   "mixins": [
@@ -24,6 +27,7 @@
   "depends": {
     "fabricloader": ">=0.14.1",
     "fabric": "*",
-    "minecraft": "1.18.2"
+    "minecraft": "1.18.2",
+    "fabric-language-kotlin": ">=1.7.4+kotlin.1.6.21"
   }
 }

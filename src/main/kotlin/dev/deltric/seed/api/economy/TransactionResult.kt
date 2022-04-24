@@ -6,5 +6,7 @@ package dev.deltric.seed.api.economy
 enum class TransactionResult {
     SUCCESS,
     INSUFFICIENT_BALANCE,
-    BALANCE_OVERFLOW
+    BALANCE_OVERFLOW,
+    NO_MODIFICATION,
+    CALLBACK_CANCELED
 }
