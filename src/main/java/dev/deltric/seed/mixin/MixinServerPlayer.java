@@ -25,6 +25,13 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Mixins the ServerPlayer to access player nbt storage
+ * and implement special interfaces
+ *
+ * @author Deltric
+ * @since 4/23/2022
+ */
 @Mixin(ServerPlayerEntity.class)
 abstract class MixinServerPlayer extends PlayerEntity implements CurrencyHolder {
     private Map<Identifier, Integer> walletMap = new HashMap<>();
