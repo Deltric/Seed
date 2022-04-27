@@ -66,17 +66,20 @@ abstract class MixinServerPlayer extends PlayerEntity implements CurrencyHolder 
     @NotNull
     @Override
     public Transaction deposit(@NotNull Currency currency, int amount) {
+        // If the currency doesn't exist add a default balance
         if(!this.walletMap.containsKey(currency.getId())) {
             this.walletMap.put(currency.getId(), 0);
         }
 
         Integer currentBalance = this.walletMap.get(currency.getId());
 
+        // 0 amount means no modification, so skip useless logic
         if(amount == 0) {
             return new Transaction(this.getUuid(), currency, TransactionType.DEPOSIT,
                     TransactionResult.NO_MODIFICATION, currentBalance, currentBalance, 0);
         }
 
+        // Check if this deposit would result in overflow
         BigDecimal sum = new BigDecimal((long) currentBalance + amount);
         if(sum.longValue() > Integer.MAX_VALUE) {
             return new Transaction(this.getUuid(), currency, TransactionType.DEPOSIT,
@@ -99,17 +102,20 @@ abstract class MixinServerPlayer extends PlayerEntity implements CurrencyHolder 
     @NotNull
     @Override
     public Transaction withdraw(@NotNull Currency currency, int amount) {
+        // If the currency doesn't exist add a default balance
         if(!this.walletMap.containsKey(currency.getId())) {
             this.walletMap.put(currency.getId(), 0);
         }
 
         Integer currentBalance = this.walletMap.get(currency.getId());
 
+        // 0 amount means no modification, so skip useless logic
         if(amount == 0) {
             return new Transaction(this.getUuid(), currency, TransactionType.WITHDRAW,
                     TransactionResult.NO_MODIFICATION, currentBalance, currentBalance, 0);
         }
 
+        // Check to make sure they have the balance to withdraw
         BigDecimal difference = new BigDecimal((long) currentBalance - amount);
         if(difference.longValue() < 0) {
             return new Transaction(this.getUuid(), currency, TransactionType.WITHDRAW,
@@ -132,10 +138,12 @@ abstract class MixinServerPlayer extends PlayerEntity implements CurrencyHolder 
     @NotNull
     @Override
     public Transaction set(@NotNull Currency currency, int amount) {
+        // If the currency doesn't exist add a default balance
         if(!this.walletMap.containsKey(currency.getId())) {
             this.walletMap.put(currency.getId(), 0);
         }
 
+        // Get the current balance only for the event
         Integer currentBalance = this.walletMap.get(currency.getId());
         Transaction postTransaction = new Transaction(this.getUuid(), currency, TransactionType.SET,
                 TransactionResult.SUCCESS, currentBalance, amount, amount);
@@ -150,8 +158,7 @@ abstract class MixinServerPlayer extends PlayerEntity implements CurrencyHolder 
     }
 
     @Override
-    public int getBalance(@NotNull Currency currency)
-    {
+    public int getBalance(@NotNull Currency currency) {
         return this.walletMap.getOrDefault(currency.getId(), 0);
     }
 }
