@@ -77,15 +77,16 @@ abstract class MixinServerPlayer extends PlayerEntity implements CurrencyHolder 
                     TransactionResult.NO_MODIFICATION, currentBalance, currentBalance, 0);
         }
 
-        BigDecimal number = new BigDecimal((long) currentBalance + amount);
-        if(number.longValue() > Integer.MAX_VALUE) {
+        BigDecimal sum = new BigDecimal((long) currentBalance + amount);
+        if(sum.longValue() > Integer.MAX_VALUE) {
             return new Transaction(this.getUuid(), currency, TransactionType.DEPOSIT,
                     TransactionResult.BALANCE_OVERFLOW, currentBalance, currentBalance, amount);
         }
 
         Transaction postTransaction = new Transaction(this.getUuid(), currency, TransactionType.DEPOSIT,
-                TransactionResult.SUCCESS, currentBalance, currentBalance + amount, amount);
+                TransactionResult.SUCCESS, currentBalance, sum.intValue(), amount);
 
+        // Run the transaction through a transaction event
         ActionResult result = TransactionCallback.Companion.getEVENT().invoker().invoke(postTransaction);
         if(result == ActionResult.FAIL) {
             return new Transaction(this.getUuid(), currency, TransactionType.DEPOSIT,
@@ -98,13 +99,54 @@ abstract class MixinServerPlayer extends PlayerEntity implements CurrencyHolder 
     @NotNull
     @Override
     public Transaction withdraw(@NotNull Currency currency, int amount) {
-        return null;
+        if(!this.walletMap.containsKey(currency.getId())) {
+            this.walletMap.put(currency.getId(), 0);
+        }
+
+        Integer currentBalance = this.walletMap.get(currency.getId());
+
+        if(amount == 0) {
+            return new Transaction(this.getUuid(), currency, TransactionType.WITHDRAW,
+                    TransactionResult.NO_MODIFICATION, currentBalance, currentBalance, 0);
+        }
+
+        BigDecimal difference = new BigDecimal((long) currentBalance - amount);
+        if(difference.longValue() < 0) {
+            return new Transaction(this.getUuid(), currency, TransactionType.WITHDRAW,
+                    TransactionResult.INSUFFICIENT_BALANCE, currentBalance, currentBalance, amount);
+        }
+
+        Transaction postTransaction = new Transaction(this.getUuid(), currency, TransactionType.WITHDRAW,
+                TransactionResult.SUCCESS, currentBalance, difference.intValue(), amount);
+
+        // Run the transaction through a transaction event
+        ActionResult result = TransactionCallback.Companion.getEVENT().invoker().invoke(postTransaction);
+        if(result == ActionResult.FAIL) {
+            return new Transaction(this.getUuid(), currency, TransactionType.WITHDRAW,
+                    TransactionResult.CALLBACK_CANCELED, currentBalance, currentBalance, amount);
+        }
+        this.walletMap.put(currency.getId(), postTransaction.getFinalBalance());
+        return postTransaction;
     }
 
     @NotNull
     @Override
     public Transaction set(@NotNull Currency currency, int amount) {
-        return null;
+        if(!this.walletMap.containsKey(currency.getId())) {
+            this.walletMap.put(currency.getId(), 0);
+        }
+
+        Integer currentBalance = this.walletMap.get(currency.getId());
+        Transaction postTransaction = new Transaction(this.getUuid(), currency, TransactionType.SET,
+                TransactionResult.SUCCESS, currentBalance, amount, amount);
+
+        // Run the transaction through a transaction event
+        ActionResult result = TransactionCallback.Companion.getEVENT().invoker().invoke(postTransaction);
+        if(result == ActionResult.FAIL) {
+            return new Transaction(this.getUuid(), currency, TransactionType.SET,
+                    TransactionResult.CALLBACK_CANCELED, currentBalance, currentBalance, amount);
+        }
+        return postTransaction;
     }
 
     @Override
