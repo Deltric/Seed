@@ -7,7 +7,7 @@ import dev.deltric.seed.api.economy.CurrencyHolder;
 import dev.deltric.seed.api.economy.Transaction;
 import dev.deltric.seed.api.economy.TransactionResult;
 import dev.deltric.seed.api.economy.TransactionType;
-import dev.deltric.seed.util.adapters.DataKeys;
+import dev.deltric.seed.util.DataKeys;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -161,6 +161,7 @@ abstract class MixinServerPlayer extends PlayerEntity implements CurrencyHolder 
             return new Transaction(this.getUuid(), currency, TransactionType.SET,
                     TransactionResult.CALLBACK_CANCELED, currentBalance, currentBalance, amount);
         }
+        this.walletMap.put(currency.getId(), postTransaction.getFinalBalance());
         return postTransaction;
     }
 

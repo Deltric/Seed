@@ -3,6 +3,7 @@ package dev.deltric.seed
 import com.google.gson.GsonBuilder
 import com.mojang.brigadier.CommandDispatcher
 import dev.deltric.seed.api.economy.CurrencyRegistry
+import dev.deltric.seed.commands.EconCommand
 import dev.deltric.seed.util.adapters.ComponentAdapter
 import dev.deltric.seed.util.adapters.IdentifierAdapter
 import dev.deltric.seed.util.manifests.CurrencyManifest
@@ -35,7 +36,8 @@ class Seed : ModInitializer {
         })
 
         CommandRegistrationCallback.EVENT.register(CommandRegistrationCallback { dispatcher: CommandDispatcher<ServerCommandSource>, dedicated: Boolean ->
-            if (!dedicated) return@CommandRegistrationCallback
+            //if (!dedicated) return@CommandRegistrationCallback
+            dispatcher.register(EconCommand.STRUCTURE)
         })
     }
 

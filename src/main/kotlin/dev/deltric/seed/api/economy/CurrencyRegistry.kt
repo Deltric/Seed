@@ -25,4 +25,11 @@ object CurrencyRegistry {
     fun register(currency: Currency) {
         currencyMap[currency.id] = currency
     }
+
+    /**
+     * Gets a list of all the currency ids
+     */
+    fun getIds(): List<String> {
+        return currencyMap.keys.map(Identifier::toString)
+    }
 }
